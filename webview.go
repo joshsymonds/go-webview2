@@ -59,11 +59,12 @@ type webview struct {
 }
 
 type WindowOptions struct {
-	Title  string
-	Width  uint
-	Height uint
-	IconId uint
-	Center bool
+	Title   string
+	Width   uint
+	Height  uint
+	IconId  uint
+	Center  bool
+	Topmost bool
 }
 
 type WebViewOptions struct {
@@ -317,8 +318,13 @@ func (w *webview) CreateWithOptions(opts WindowOptions) bool {
 		posY = w32.CW_USEDEFAULT
 	}
 
+	var dwExStyle uintptr
+	if opts.Topmost {
+		dwExStyle = 0x00000008 // WS_EX_TOPMOST
+	}
+
 	w.hwnd, _, _ = w32.User32CreateWindowExW.Call(
-		0,
+		dwExStyle,
 		uintptr(unsafe.Pointer(className)),
 		uintptr(unsafe.Pointer(windowName)),
 		0xCF0000, // WS_OVERLAPPEDWINDOW
